@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คำนวณยอดฝาก-ถอน (ตู้ชั้น 2)</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#ffffff',
+                        'secondary': '#f8f9fa',
+                        'accent': '#2563eb',
+                        'soft-gray': '#e5e7eb',
+                        'text-primary': '#1f2937',
+                        'text-secondary': '#6b7280',
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Main container */
+        .main-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+        }
+
+        /* Input styling */
+        .input-field {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            color: #1f2937;
+            font-size: 15px;
+        }
+
+        /* Hide number input arrows/spinners */
+        .input-field::-webkit-outer-spin-button,
+        .input-field::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-field[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .input-field:focus {
+            background: #ffffff;
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-field:hover:not(:focus) {
+            border-color: #cbd5e1;
+        }
+
+        /* Button styling */
+        .btn {
+            transition: all 0.3s ease;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+        .btn > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4b5563;
+            font-weight: 600;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: #f9fafb;
+            color: #374151;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-reset {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+
+        .btn-reset:hover {
+            background: #fee2e2;
+            border-color: #fca5a5;
+        }
+
+        /* Result card */
+        .result-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Large Profit Display */
+        .result-profit-main {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .result-profit-icon {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+        }
+        .result-profit-amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: #10b981;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+        .result-profit-label {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        /* Details Grid */
+        .result-details-grid {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #f3f4f6;
+        }
+        .result-detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .result-detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .result-detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        /* Summary Section */
+        .result-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-top: 1px solid #e5e7eb;
+            margin-bottom: 8px;
+        }
+        .result-summary-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        .result-summary-value {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        .result-copy-note {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: left;
+        }
+
+        /* Log item */
+        .log-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .log-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animation */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Modern confirmation modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeIn 0.2s ease forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 380px;
+            width: calc(100% - 40px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9) translateY(20px);
+            opacity: 0;
+            animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+        }
+        @keyframes modalSlideUp {
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffffff, #ffffff);
+            flex-shrink: 0;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+        }
+        .modal-message {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Prompt', sans-serif;
+        }
+        .modal-btn-cancel {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .modal-btn-cancel:hover {
+            background: #e5e7eb;
+            color: #374151;
+            transform: translateY(-1px);
+        }
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+        .modal-btn-confirm:active,
+        .modal-btn-cancel:active {
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 24px;
+                max-width: calc(100% - 32px);
+            }
+        }
+
+        /* Modern toast notification */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 14px 20px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            min-width: 200px;
+            animation: toastSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.3s ease;
+        }
+        .toast:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toast-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            animation: iconPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+        }
+        .toast-icon.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .toast-icon.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .toast-icon.info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        @keyframes iconPop {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(20deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        .toast-text {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .toast-close {
+            margin-left: auto;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0.5;
+        }
+        .toast-close:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        @media (max-width: 640px) {
+            .toast {
+                top: 16px;
+                right: 16px;
+                left: 16px;
+                min-width: unset;
+            }
+        }
+
+        /* Bottom quick popup (minimal) */
+        .quick-popup-wrapper {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            z-index: 900;
+            animation: popupSlideUp 0.5s ease-out;
+        }
+        @keyframes popupSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .quick-popup {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            padding: 8px 14px 8px 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            font-size: 13px;
+            line-height: 1;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        .quick-popup:hover {
+            box-shadow: 0 8px 28px rgba(0,0,0,0.14);
+            transform: translateY(-2px);
+        }
+        .quick-popup span.label {
+            font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+            transition: color 0.3s ease;
+        }
+        .quick-popup:hover span.label {
+            color: #2563eb;
+        }
+        .quick-popup button {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6, #2563eb, #1d4ed8);
+            background-size: 300% 300%;
+            color: #fff;
+            border: none;
+            padding: 6px 14px 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 3s ease infinite;
+        }
+        .quick-popup button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .quick-popup button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        .quick-popup button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(37,99,235,0.5);
+        }
+        .quick-popup button:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        .quick-popup button svg {
+            width: 18px;
+            height: 18px;
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .quick-popup button:hover svg {
+            transform: translateX(-3px);
+        }
+        .quick-popup button span {
+            position: relative;
+            z-index: 1;
+        }
+        @media (max-width: 640px) {
+            .quick-popup-wrapper {
+                left: 50%;
+                right: auto;
+                transform: translateX(-50%);
+                bottom: 12px;
+            }
+            @keyframes popupSlideUp {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, 20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, 0);
+                }
+            }
+            .quick-popup {
+                padding: 6px 12px 6px 14px;
+                font-size: 12px;
+                gap: 8px;
+            }
+            .quick-popup button {
+                padding: 6px 12px;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(to bottom, #f8fafc, #ffffff);
+            border-top: 1px solid #e5e7eb;
+            padding: 32px 20px 24px;
+            margin-top: 40px;
+        }
+        .footer-content {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .footer-logo {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .footer-brand-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .footer-text {
+            color: #9ca3af;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .footer-divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            margin: 20px 0;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-link {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s ease;
+            position: relative;
+            padding-bottom: 2px;
+        }
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+        .footer-link:hover {
+            color: #2563eb;
+        }
+        .footer-link:hover::after {
+            width: 100%;
+        }
+        @media (max-width: 640px) {
+            .footer {
+                padding: 24px 16px 20px;
+                margin-bottom: 70px;
+            }
+            .footer-links {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-900">
+
+    <div class="main-container">
+            
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 px-5 py-4 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">ตู้ชั้น 2</h1>
+                            <p class="text-xs text-gray-500">ฝาก-ถอน-กำไร</p>
+                        </div>
+                    </div>
+                    <button onclick="resetAll()" class="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors">
+                        <span class="text-sm font-medium">ปิดยอด</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="p-5 space-y-5">
+                
+                <!-- Input Fields Card -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <h2 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        กรอกข้อมูล
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <!-- ยอดฝากรวม -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1.5">ยอดฝากรวม</label>
+                            <input type="number" id="totalDeposit" value="" placeholder="กรอกยอดฝากรวม"
+                                   class="input-field w-full px-4 py-3 rounded-xl"
+                                   onkeydown="handleEnter(event)">
+                        </div>
+
+                        <!-- ยอดถอนรวม -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1.5">ยอดถอนรวม</label>
+                            <input type="number" id="totalWithdrawal" value="" placeholder="กรอกยอดถอนรวม"
+                                   class="input-field w-full px-4 py-3 rounded-xl"
+                                   onkeydown="handleEnter(event)">
+                        </div>
+
+                        <!-- ลบฝาก -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1.5">ลบฝาก (หักออก)</label>
+                            <input type="number" id="minusDeposit" value="" placeholder="กรอกยอดที่ต้องการลบฝาก"
+                                   class="input-field w-full px-4 py-3 rounded-xl"
+                                   onkeydown="handleEnter(event)">
+                        </div>
+
+                        <!-- ลบถอน -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1.5">ลบถอน (หักออก)</label>
+                            <input type="number" id="minusWithdrawal" value="" placeholder="กรอกยอดที่ต้องการลบถอน"
+                                   class="input-field w-full px-4 py-3 rounded-xl"
+                                   onkeydown="handleEnter(event)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Card -->
+                <div class="result-card">
+                    <!-- Large Profit Display -->
+                    <div class="result-profit-main">
+                        <div class="result-profit-icon">฿</div>
+                        <div id="displayProfit" class="result-profit-amount">0</div>
+                    </div>
+                    <div class="result-profit-label">กำไรสุทธิเดือน</div>
+                    
+                    <!-- Details Grid -->
+                    <div class="result-details-grid">
+                        <div class="result-detail-item">
+                            <div class="result-detail-label">รายการ:</div>
+                            <div id="displayTotalDeposit" class="result-detail-value">฿0</div>
+                        </div>
+                        <div class="result-detail-item">
+                            <div class="result-detail-label">เงินรวม:</div>
+                            <div id="displayTotalWithdrawal" class="result-detail-value">฿0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <button onclick="calculateOnly()" class="btn btn-secondary py-3.5 rounded-xl flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"></path>
+                        </svg>
+                        <span>คำนวณ</span>
+                    </button>
+                    <button onclick="calculateAndCopy()" class="btn btn-primary py-3.5 rounded-xl flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>คัดลอก</span>
+                    </button>
+                    <button onclick="resetInputs()" class="btn btn-secondary py-3.5 rounded-xl flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>ล้างค่า</span>
+                    </button>
+                </div>
+
+                <!-- Log History -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-semibold text-gray-700 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            ประวัติการคำนวณ
+                        </h2>
+                        <button onclick="clearHistory()" class="text-xs text-red-500 hover:text-red-600">ล้างทั้งหมด</button>
+                    </div>
+                    
+                    <div id="logContainer" class="max-h-80 overflow-y-auto space-y-2">
+                        <div class="text-center text-sm text-gray-400 py-8">ยังไม่มีประวัติ</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="footer-brand-text">usernoneam.com</span>
+                    </div>
+                    <p class="footer-text">สงวนสิทธิ์ทุกประการ © 2025</p>
+                    <div class="footer-divider"></div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">คำถามที่พบบ่อย</a>
+                        <a href="#" class="footer-link">ช่วยเหลือ</a>
+                        <a href="#" class="footer-link">นโยบายและเงื่อนไข</a>
+                        <a href="#" class="footer-link">ความเป็นส่วนตัว</a>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+            <!-- Minimal Bottom Popup -->
+            <div class="quick-popup-wrapper">
+                <div class="quick-popup">
+                    <span class="label">ร้าน 1</span>
+                    <button onclick="goStore1()" aria-label="กลับร้าน 1">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M19 12H5" />
+                            <path d="M12 19l-7-7 7-7" />
+                        </svg>
+                        <span>กลับร้าน 1</span>
+                    </button>
+                </div>
+            </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Get DOM elements
+        const totalDepositInput = document.getElementById('totalDeposit');
+        const totalWithdrawalInput = document.getElementById('totalWithdrawal');
+        const minusDepositInput = document.getElementById('minusDeposit');
+        const minusWithdrawalInput = document.getElementById('minusWithdrawal');
+        
+        const displayTotalDeposit = document.getElementById('displayTotalDeposit');
+        const displayTotalWithdrawal = document.getElementById('displayTotalWithdrawal');
+        const displayProfit = document.getElementById('displayProfit');
+        
+        const logContainer = document.getElementById('logContainer');
+
+        // Running cumulative totals (persisted) - Store 2 keys
+        let cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
+        let cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
+
+        // Load history from localStorage
+        let history = JSON.parse(localStorage.getItem('calculatorHistory2')) || [];
+
+        /**
+         * Calculate and update display
+         */
+        function calculate() {
+            try {
+                const inputDeposit = parseFloat(totalDepositInput.value) || 0;
+                const inputWithdrawal = parseFloat(totalWithdrawalInput.value) || 0;
+                const minusDeposit = parseFloat(minusDepositInput.value) || 0;
+                const minusWithdrawal = parseFloat(minusWithdrawalInput.value) || 0;
+
+                // Preview cumulative totals with current inputs
+                const previewDeposit = cumulativeDeposit + inputDeposit - minusDeposit;
+                const previewWithdrawal = cumulativeWithdrawal + inputWithdrawal - minusWithdrawal;
+                const previewProfit = previewDeposit - previewWithdrawal;
+
+                // Update display with animation
+                animateNumber(displayTotalDeposit, previewDeposit);
+                animateNumber(displayTotalWithdrawal, previewWithdrawal);
+                animateNumber(displayProfit, previewProfit);
+
+                return {
+                    totalDeposit: previewDeposit,
+                    totalWithdrawal: previewWithdrawal,
+                    profit: previewProfit,
+                    deltaDeposit: inputDeposit - minusDeposit,
+                    deltaWithdrawal: inputWithdrawal - minusWithdrawal
+                };
+
+            } catch (error) {
+                console.error("Calculation error:", error);
+                return null;
+            }
+        }
+
+        /**
+         * Show modern confirmation modal
+         */
+        function showConfirm(title, message, onConfirm) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="modal-icon">
+                            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="modal-title">${title}</h3>
+                    </div>
+                    <p class="modal-message">${message}</p>
+                    <div class="modal-actions">
+                        <button class="modal-btn modal-btn-cancel" onclick="this.closest('.modal-overlay').remove()">ยกเลิก</button>
+                        <button class="modal-btn modal-btn-confirm" id="confirmBtn">ยืนยัน</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on overlay click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.opacity = '0';
+                    setTimeout(() => modal.remove(), 200);
+                }
+            });
+            
+            // Confirm button handler
+            modal.querySelector('#confirmBtn').addEventListener('click', () => {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.remove();
+                    onConfirm();
+                }, 200);
+            });
+        }
+
+        /**
+         * Animate number transition
+         */
+        function animateNumber(element, targetValue) {
+            const currentValue = parseFloat(element.textContent) || 0;
+            const difference = targetValue - currentValue;
+            const duration = 300;
+            const startTime = performance.now();
+
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const value = currentValue + (difference * easeOut);
+                
+                element.textContent = value.toFixed(2);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        /**
+         * Calculate and copy to clipboard
+         */
+        async function calculateAndCopy() {
+            // Preview to compute current round deltas
+            const preview = calculate();
+            if (!preview) return;
+
+            // Save previous values BEFORE committing
+            const prevDeposit = cumulativeDeposit;
+            const prevWithdrawal = cumulativeWithdrawal;
+            const inputDeposit = parseFloat(totalDepositInput.value) || 0;
+            const inputWithdrawal = parseFloat(totalWithdrawalInput.value) || 0;
+            const minusDeposit = parseFloat(minusDepositInput.value) || 0;
+            const minusWithdrawal = parseFloat(minusWithdrawalInput.value) || 0;
+            const deltaDeposit = inputDeposit - minusDeposit;
+            const deltaWithdrawal = inputWithdrawal - minusWithdrawal;
+
+            // Apply this round to cumulative totals
+            cumulativeDeposit += preview.deltaDeposit;
+            cumulativeWithdrawal += preview.deltaWithdrawal;
+
+            // Persist
+            localStorage.setItem('cumDeposit2', String(cumulativeDeposit));
+            localStorage.setItem('cumWithdrawal2', String(cumulativeWithdrawal));
+
+            // Prepare output from cumulative totals (no decimals)
+            const outputText = `ยอดฝากรวม = ${Math.round(cumulativeDeposit)}\nยอดถอนรวม = ${Math.round(cumulativeWithdrawal)}\nกำไร (ฝาก-ถอน) = ${Math.round(cumulativeDeposit - cumulativeWithdrawal)}`;
+
+            // Copy to clipboard
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(outputText);
+                } else {
+                    const tempInput = document.createElement('textarea');
+                    tempInput.value = outputText;
+                    tempInput.style.position = 'fixed';
+                    tempInput.style.opacity = '0';
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                }
+
+                // Show success toast
+                showToast('คัดลอกสำเร็จ! ✓', 'success');
+
+                // Add to history with correct before/after values
+                addToHistory({
+                    prevDeposit: prevDeposit,
+                    prevWithdrawal: prevWithdrawal,
+                    deltaDeposit: deltaDeposit,
+                    deltaWithdrawal: deltaWithdrawal,
+                    totalDeposit: cumulativeDeposit,
+                    totalWithdrawal: cumulativeWithdrawal,
+                    profit: cumulativeDeposit - cumulativeWithdrawal
+                });
+
+                // Clear inputs for next entry and reset displayed results
+                totalDepositInput.value = '';
+                totalWithdrawalInput.value = '';
+                minusDepositInput.value = '';
+                minusWithdrawalInput.value = '';
+                calculate();
+
+                // Focus first input for continuous entry
+                totalDepositInput.focus();
+
+                // Haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            } catch (err) {
+                console.error('Copy failed:', err);
+                showToast('คัดลอกไม่สำเร็จ', 'error');
+            }
+        }
+
+        /**
+         * Show modern toast notification
+         */
+        function showToast(message, type = 'success') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.style.animation = 'toastSlideIn 0.3s ease-out reverse';
+                setTimeout(() => existingToast.remove(), 200);
+            }
+
+            const icons = {
+                success: `<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>`,
+                error: `<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>`,
+                info: `<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>`
+            };
+
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <div class="toast-icon ${type}">
+                        ${icons[type] || icons.info}
+                    </div>
+                    <span class="toast-text">${message}</span>
+                    <div class="toast-close" onclick="this.parentElement.parentElement.remove()">
+                        <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px) scale(0.8)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function goStore1(){
+            // Navigate back to first page
+            window.location.href = 'ZA2.html';
+        }
+
+        /**
+         * Calculate only (for mobile users who want to see preview before copy)
+         */
+        function calculateOnly() {
+            calculate();
+            showToast('คำนวณแล้ว');
+        }
+
+        /**
+         * Add calculation to history
+         */
+        function addToHistory(result) {
+            const timestamp = new Date();
+            const entry = {
+                // Previous values (before adding)
+                prevDeposit: result.prevDeposit || 0,
+                prevWithdrawal: result.prevWithdrawal || 0,
+                prevProfit: (result.prevDeposit || 0) - (result.prevWithdrawal || 0),
+                // Delta (change amount)
+                deltaDeposit: result.deltaDeposit || 0,
+                deltaWithdrawal: result.deltaWithdrawal || 0,
+                // New values (after adding)
+                totalDeposit: result.totalDeposit,
+                totalWithdrawal: result.totalWithdrawal,
+                profit: result.profit,
+                time: timestamp.toLocaleString('th-TH', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                })
+            };
+
+            history.unshift(entry);
+            
+            // Keep only last 20 entries
+            if (history.length > 20) {
+                history = history.slice(0, 20);
+            }
+
+            // Save to localStorage
+            localStorage.setItem('calculatorHistory2', JSON.stringify(history));
+
+            // Update UI
+            renderHistory();
+        }
+
+        /**
+         * Render history log
+         */
+        function renderHistory() {
+            if (history.length === 0) {
+                logContainer.innerHTML = '<div class="text-center text-sm text-gray-400 py-8">ยังไม่มีประวัติ</div>';
+                return;
+            }
+
+            logContainer.innerHTML = history.map((entry, index) => `
+                <div class="log-item slide-in" style="animation-delay: ${index * 0.05}s">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="text-xs text-gray-500">${entry.time}</div>
+                        <div class="text-sm font-bold ${entry.profit >= 0 ? 'text-green-600' : 'text-red-600'}">
+                            ${entry.profit >= 0 ? '+' : ''}${entry.profit.toFixed(2)}
+                        </div>
+                    </div>
+                    
+                    <!-- Before values -->
+                    <div class="text-xs text-gray-400 mb-1">ยอดก่อน:</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 mb-2">
+                        <div>ฝาก: ${entry.prevDeposit.toFixed(2)}</div>
+                        <div>ถอน: ${entry.prevWithdrawal.toFixed(2)}</div>
+                    </div>
+                    
+                    <!-- Delta changes -->
+                    ${(entry.deltaDeposit !== 0 || entry.deltaWithdrawal !== 0) ? `
+                        <div class="text-xs text-blue-500 font-medium mb-1">เพิ่ม/ลด:</div>
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                            <div class="${entry.deltaDeposit >= 0 ? 'text-green-600' : 'text-red-600'} font-medium">
+                                ฝาก: ${entry.deltaDeposit >= 0 ? '+' : ''}${entry.deltaDeposit.toFixed(2)}
+                            </div>
+                            <div class="${entry.deltaWithdrawal >= 0 ? 'text-green-600' : 'text-red-600'} font-medium">
+                                ถอน: ${entry.deltaWithdrawal >= 0 ? '+' : ''}${entry.deltaWithdrawal.toFixed(2)}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <!-- After values -->
+                    <div class="text-xs text-gray-700 font-semibold mb-1">ยอดหลัง:</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs text-gray-900 font-medium">
+                        <div>ฝาก: ${entry.totalDeposit.toFixed(2)}</div>
+                        <div>ถอน: ${entry.totalWithdrawal.toFixed(2)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Clear all history
+         */
+        function clearHistory() {
+            if (history.length === 0) return;
+            
+            showConfirm(
+                'ล้างประวัติ',
+                'คุณต้องการลบประวัติการคำนวณทั้งหมดใช่หรือไม่?',
+                () => {
+                    history = [];
+                    localStorage.removeItem('calculatorHistory2');
+                    renderHistory();
+                    showToast('ล้างประวัติสำเร็จ', 'success');
+                }
+            );
+        }
+
+        /**
+         * Reset input fields
+         */
+        function resetInputs() {
+            totalDepositInput.value = '';
+            totalWithdrawalInput.value = '';
+            minusDepositInput.value = '';
+            minusWithdrawalInput.value = '';
+            calculate();
+            showToast('ล้างค่าสำเร็จ', 'success');
+        }
+
+        /**
+         * Reset all (inputs + history)
+         */
+        function resetAll() {
+            showConfirm(
+                'รีเซ็ตทั้งหมด',
+                'การรีเซ็ตจะลบข้อมูลทั้งหมด รวมถึงยอดสะสมและประวัติ คุณแน่ใจหรือไม่?',
+                () => {
+                    resetInputs();
+                    history = [];
+                    localStorage.removeItem('calculatorHistory2');
+                    // Reset cumulative totals
+                    cumulativeDeposit = 0;
+                    cumulativeWithdrawal = 0;
+                    localStorage.removeItem('cumDeposit2');
+                    localStorage.removeItem('cumWithdrawal2');
+                    renderHistory();
+                    calculate();
+                    showToast('รีเซ็ตสำเร็จ', 'success');
+                }
+            );
+        }
+
+        /**
+         * Handle Enter key
+         */
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                calculateAndCopy();
+            }
+        }
+
+        /**
+         * Setup input validation
+         */
+        function setupInputs() {
+            const inputs = [totalDepositInput, totalWithdrawalInput, minusDepositInput, minusWithdrawalInput];
+            
+            inputs.forEach(input => {
+                // Prevent negative numbers
+                input.addEventListener('input', function() {
+                    if (this.value < 0) this.value = 0;
+                    calculate();
+                });
+
+                // Calculate on change
+                input.addEventListener('change', calculate);
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            setupInputs();
+            calculate();
+            renderHistory();
+            totalDepositInput.focus();
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    calculateAndCopy();
+                }
+            });
+        });
+
+        // DevTools & inspection deterrent (cannot fully block, just discourage)
+        (function(){
+            const threshold = 160;
+            let overlay = null;
+            function likelyOpen(){
+                return (window.outerWidth - window.innerWidth > threshold) || (window.outerHeight - window.innerHeight > threshold);
+            }
+            function showOverlay(){
+                if(overlay) return;
+                overlay = document.createElement('div');
+                overlay.style.position='fixed';
+                overlay.style.top='0';
+                overlay.style.left='0';
+                overlay.style.width='100%';
+                overlay.style.height='100%';
+                overlay.style.background='rgba(255,255,255,0.92)';
+                overlay.style.zIndex='999999';
+                overlay.style.display='flex';
+                overlay.style.flexDirection='column';
+                overlay.style.justifyContent='center';
+                overlay.style.alignItems='center';
+                overlay.style.fontFamily='Prompt, sans-serif';
+                overlay.innerHTML='<div class="text-gray-800 font-semibold mb-2">โหมดตรวจสอบถูกปิด</div><div class="text-gray-600 text-xs">ปิด DevTools เพื่อกลับ</div>';
+                document.body.appendChild(overlay);
+                showToast('ป้องกันการตรวจสอบโค้ด','error');
+            }
+            function hideOverlay(){
+                if(!overlay) return;
+                overlay.remove();
+                overlay = null;
+                showToast('กลับสู่โหมดปกติ','success');
+            }
+            setInterval(()=>{ if(likelyOpen()) showOverlay(); else hideOverlay(); },1500);
+            document.addEventListener('contextmenu', e=>{ e.preventDefault(); showToast('ป้องกันการคลิกขวา','error'); });
+            document.addEventListener('keydown', e=>{
+                const k = e.key.toUpperCase();
+                if(k==='F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && k==='U')){
+                    e.preventDefault();
+                    showToast('ป้องกันการตรวจสอบโค้ด','error');
+                }
+            });
+        })();
+    </script>
+
+</body>
+</html>
