@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คำถามที่พบบ่อย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.03);
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #2563eb;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .faq-item {
+            margin-bottom: 16px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .faq-question {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .faq-answer {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <a href="ZA2.html" class="back-btn">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+                กลับ
+            </a>
+            <h1 class="page-title">คำถามที่พบบ่อย</h1>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">เกี่ยวกับเว็บไซต์</h2>
+                
+                <div class="faq-item">
+                    <div class="faq-question">เว็บไซต์นี้คืออะไร?</div>
+                    <div class="faq-answer">เว็บไซต์นี้เป็นเครื่องมือออนไลน์ฟรีที่ช่วยให้คุณสามารถคำนวณและประมาณการยอดกำไรจากการดำเนินงาน/ธุรกิจของคุณได้อย่างรวดเร็วและง่ายดาย</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">การใช้เครื่องมือนี้มีค่าใช้จ่ายหรือไม่?</div>
+                    <div class="faq-answer">ไม่มีค่าใช้จ่ายใดๆ ทั้งสิ้น คุณสามารถใช้เครื่องมือคำนวณกำไรทั้งหมดของเราได้ฟรี 100%</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">ฉันต้องสมัครสมาชิกหรือลงทะเบียนก่อนใช้หรือไม่?</div>
+                    <div class="faq-answer">ไม่จำเป็นต้องสมัครสมาชิกหรือลงทะเบียน คุณสามารถเริ่มคำนวณได้ทันที</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">ข้อมูลที่ฉันกรอกจะถูกบันทึกไว้หรือไม่?</div>
+                    <div class="faq-answer">ข้อมูลที่คุณกรอกเพื่อคำนวณจะถูกประมวลผลแบบเรียลไทม์บนเบราว์เซอร์ของคุณ และจะไม่ถูกบันทึกหรือจัดเก็บไว้ในเซิร์ฟเวอร์ของเรา</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

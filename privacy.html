@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ความเป็นส่วนตัว</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.03);
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #2563eb;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .privacy-item {
+            margin-bottom: 16px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .privacy-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        .privacy-text {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 640px) {
+            .main-container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header">
+            <a href="ZA2.html" class="back-btn">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+                กลับ
+            </a>
+            <h1 class="page-title">ความเป็นส่วนตัว</h1>
+        </div>
+
+        <div class="content">
+            <div class="privacy-item">
+                <div class="privacy-subtitle">การเก็บรวบรวมข้อมูลส่วนบุคคล</div>
+                <div class="privacy-text">เรามุ่งมั่นที่จะไม่เก็บรวบรวมข้อมูลส่วนบุคคลใดๆ ของผู้ใช้งาน (เช่น ชื่อ, อีเมล, ที่อยู่) เนื่องจากเว็บไซต์นี้ไม่จำเป็นต้องมีการลงทะเบียน</div>
+            </div>
+
+            <div class="privacy-item">
+                <div class="privacy-subtitle">การจัดเก็บข้อมูลการคำนวณ</div>
+                <div class="privacy-text">ข้อมูลตัวเลขที่คุณใช้ในการคำนวณ (เช่น รายได้, ต้นทุน) จะไม่ถูกบันทึกหรือจัดเก็บไว้ในเซิร์ฟเวอร์ของเรา และจะถูกล้างเมื่อคุณปิดหน้าต่างหรือรีเฟรชหน้า</div>
+            </div>
+
+            <div class="privacy-item">
+                <div class="privacy-subtitle">คุกกี้ (Cookies)</div>
+                <div class="privacy-text">เราอาจใช้คุกกี้เพื่อวัตถุประสงค์ในการวิเคราะห์การใช้งานเว็บไซต์โดยรวม (เช่น Google Analytics) เพื่อปรับปรุงประสิทธิภาพและความสะดวกในการใช้งาน คุกกี้เหล่านี้จะไม่ได้จัดเก็บข้อมูลส่วนตัวที่สามารถระบุตัวตนของคุณได้</div>
+            </div>
+
+            <div class="privacy-item">
+                <div class="privacy-subtitle">ลิงก์ภายนอก</div>
+                <div class="privacy-text">เว็บไซต์นี้อาจมีลิงก์ไปยังเว็บไซต์ภายนอก เราไม่รับผิดชอบต่อนโยบายความเป็นส่วนตัวของเว็บไซต์เหล่านั้น โปรดตรวจสอบนโยบายของเว็บไซต์ภายนอกที่คุณเข้าชม</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
