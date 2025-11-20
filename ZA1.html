@@ -1696,46 +1696,6 @@
                 }
             }, { passive: false });
         });
-
-        // DevTools & inspection deterrent (cannot fully block, just discourage)
-        (function(){
-            const threshold = 160;
-            let overlay = null;
-            function likelyOpen(){
-                return (window.outerWidth - window.innerWidth > threshold) || (window.outerHeight - window.innerHeight > threshold);
-            }
-            function showOverlay(){
-                if(overlay) return;
-                overlay = document.createElement('div');
-                overlay.style.position='fixed';
-                overlay.style.top='0';
-                overlay.style.left='0';
-                overlay.style.width='100%';
-                overlay.style.height='100%';
-                overlay.style.background='rgba(255,255,255,0.92)';
-                overlay.style.zIndex='999999';
-                overlay.style.display='flex';
-                overlay.style.flexDirection='column';
-                overlay.style.justifyContent='center';
-                overlay.style.alignItems='center';
-                overlay.style.fontFamily='Prompt, sans-serif';
-                overlay.innerHTML='<div class="text-gray-800 font-semibold mb-2">โหมดตรวจสอบถูกปิด</div><div class="text-gray-600 text-xs">ปิด DevTools เพื่อกลับ</div>';
-                document.body.appendChild(overlay);
-            }
-            function hideOverlay(){
-                if(!overlay) return;
-                overlay.remove();
-                overlay = null;
-            }
-            setInterval(()=>{ if(likelyOpen()) showOverlay(); else hideOverlay(); },1500);
-            document.addEventListener('contextmenu', e=>{ e.preventDefault(); });
-            document.addEventListener('keydown', e=>{
-                const k = e.key.toUpperCase();
-                if(k==='F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && k==='U')){
-                    e.preventDefault();
-                }
-            });
-        })();
     </script>
 
 </body>
