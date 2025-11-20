@@ -397,137 +397,58 @@
             }
         }
 
-        /* Bottom quick popup (minimal) */
+        /* Bottom navigation button */
         .quick-popup-wrapper {
             position: fixed;
-            bottom: 16px;
-            right: 16px;
-            z-index: 900;
-            animation: popupSlideUp 0.5s ease-out;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
         }
-        @keyframes popupSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes pulseGlow {
-            0%, 100% {
-                box-shadow: 0 6px 18px rgba(0,0,0,0.08), 0 0 0 0 rgba(37,99,235,0.4);
-            }
-            50% {
-                box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 8px rgba(37,99,235,0);
-            }
-        }
-        @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-        .quick-popup {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .quick-popup-wrapper button {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
             background: #ffffff;
             border: 1px solid #e5e7eb;
-            border-radius: 999px;
-            padding: 8px 14px 8px 16px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-            font-size: 13px;
-            line-height: 1;
-            user-select: none;
-            transition: all 0.3s ease;
-        }
-        .quick-popup:hover {
-            box-shadow: 0 8px 28px rgba(0,0,0,0.14);
-            transform: translateY(-2px);
-        }
-        .quick-popup span.label {
-            font-weight: 600;
-            color: #1f2937;
-            white-space: nowrap;
-            transition: color 0.3s ease;
-        }
-        .quick-popup:hover span.label {
-            color: #2563eb;
-        }
-        .quick-popup button {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6, #2563eb, #1d4ed8);
-            background-size: 300% 300%;
-            color: #fff;
-            border: none;
-            padding: 6px 14px 6px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
+            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(37,99,235,0.35);
-            position: relative;
-            overflow: hidden;
-            animation: gradientShift 3s ease infinite;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .quick-popup button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+        .quick-popup-wrapper button svg {
+            width: 22px;
+            height: 22px;
+            color: #1f2937;
+            transition: all 0.2s ease;
         }
-        .quick-popup button:hover::before {
-            width: 300px;
-            height: 300px;
+        .quick-popup-wrapper button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+            background: #f9fafb;
+            border-color: #d1d5db;
         }
-        .quick-popup button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(37,99,235,0.5);
+        .quick-popup-wrapper button:hover svg {
+            color: #2563eb;
         }
-        .quick-popup button:active {
-            transform: translateY(-1px) scale(0.98);
-        }
-        .quick-popup button svg {
-            width: 18px;
-            height: 18px;
-            transition: transform 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-        .quick-popup button:hover svg {
-            transform: translateX(3px);
-        }
-        .quick-popup button span {
-            position: relative;
-            z-index: 1;
+        .quick-popup-wrapper button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         @media (max-width: 640px) {
             .quick-popup-wrapper {
-                left: 50%;
-                right: auto;
-                transform: translateX(-50%);
-                bottom: 12px;
+                bottom: 16px;
+                right: 16px;
             }
-            .quick-popup {
-                padding: 6px 12px 6px 14px;
-                font-size: 12px;
-                gap: 8px;
+            .quick-popup-wrapper button {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
             }
-            .quick-popup button {
-                padding: 6px 12px;
+            .quick-popup-wrapper button svg {
+                width: 20px;
+                height: 20px;
             }
         }
 
