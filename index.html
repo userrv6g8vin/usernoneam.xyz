@@ -298,120 +298,6 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        /* Modern confirmation modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            animation: fadeIn 0.25s ease forwards;
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        .modal-content {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 360px;
-            width: calc(100% - 48px);
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
-            transform: scale(0.95) translateY(10px);
-            opacity: 0;
-            animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
-        }
-        @keyframes modalSlideUp {
-            to {
-                transform: scale(1) translateY(0);
-                opacity: 1;
-            }
-        }
-        .modal-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .modal-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            flex-shrink: 0;
-        }
-        .modal-title {
-            font-size: 19px;
-            font-weight: 700;
-            color: #0f172a;
-            margin: 0;
-        }
-        .modal-message {
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 28px;
-            text-align: center;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-        }
-        .modal-btn {
-            flex: 1;
-            padding: 13px 24px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            font-family: 'Prompt', sans-serif;
-        }
-        .modal-btn-cancel {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        .modal-btn-cancel:hover {
-            background: #e2e8f0;
-            color: #475569;
-            transform: translateY(-1px);
-        }
-        .modal-btn-confirm {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-        }
-        .modal-btn-confirm:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
-        }
-        .modal-btn-confirm:active,
-        .modal-btn-cancel:active {
-            transform: scale(0.97);
-        }
-
-        @media (max-width: 640px) {
-            .modal-content {
-                padding: 28px;
-                max-width: calc(100% - 32px);
-            }
-        }
-
         /* Modern toast notification */
         .toast {
             position: fixed;
@@ -529,6 +415,14 @@
                 transform: translateY(0);
             }
         }
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 6px 18px rgba(0,0,0,0.08), 0 0 0 0 rgba(37,99,235,0.4);
+            }
+            50% {
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 8px rgba(37,99,235,0);
+            }
+        }
         @keyframes gradientShift {
             0%, 100% {
                 background-position: 0% 50%;
@@ -614,7 +508,7 @@
             z-index: 1;
         }
         .quick-popup button:hover svg {
-            transform: translateX(-3px);
+            transform: translateX(3px);
         }
         .quick-popup button span {
             position: relative;
@@ -627,16 +521,6 @@
                 transform: translateX(-50%);
                 bottom: 12px;
             }
-            @keyframes popupSlideUp {
-                from {
-                    opacity: 0;
-                    transform: translate(-50%, 20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translate(-50%, 0);
-                }
-            }
             .quick-popup {
                 padding: 6px 12px 6px 14px;
                 font-size: 12px;
@@ -645,6 +529,113 @@
             .quick-popup button {
                 padding: 6px 12px;
             }
+        }
+
+        /* Modern confirmation modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            animation: fadeIn 0.25s ease forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        .modal-content {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 360px;
+            width: calc(100% - 48px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+        }
+        @keyframes modalSlideUp {
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            flex-shrink: 0;
+        }
+        .modal-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        .modal-message {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 13px 24px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'Prompt', sans-serif;
+        }
+        .modal-btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+            color: #475569;
+            transform: translateY(-1px);
+        }
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+        }
+        .modal-btn-confirm:active,
+        .modal-btn-cancel:active {
+            transform: scale(0.97);
         }
 
         /* Contact Section */
@@ -888,16 +879,11 @@
         }
         /* Mobile tap target enhancements */
         @media (max-width:640px){
-            /* Increase action button vertical padding */
             .grid.grid-cols-3 > button {padding-top:14px;padding-bottom:14px;}
-            /* Ensure minimum height for primary interactive buttons */
             .btn-primary, .btn-secondary, .btn-reset {min-height:52px;}
-            /* Enlarge bottom quick popup button */
             .quick-popup button {padding:12px 20px;}
             .quick-popup button svg {width:24px;height:24px;}
-            /* Larger header reset button area */
             button[onclick="resetAll()"] {padding:10px 14px;}
-            /* Enlarge contact channel items */
             .contact-channel-item {padding:20px;}
         }
     </style>
@@ -934,7 +920,7 @@
                             </svg>
                             กรอกจำนวนเงิน
                         </div>
-                        <span class="text-xs font-bold text-white bg-gradient-to-r from-red-500 to-red-600 px-3 py-1 rounded-full shadow-sm">ชั้น 2</span>
+                        <span class="text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-1 rounded-full shadow-sm">ชั้น 1</span>
                     </h2>
                     
                     <div class="space-y-4">
@@ -1127,7 +1113,7 @@
                             <div class="contact-channel-desc">ติดต่อทีมงานตรงนี้</div>
                         </div>
                     </button>
-                    <button class="contact-channel-item" onclick="window.open('https://www.tiktok.com/@ooooo5li/video/7447121335735700744?is_from_webapp=1&sender_device=pc&web_id=7542398368409060884', '_blank')">
+                    <button class="contact-channel-item" onclick="window.open('https://www.tiktok.com/@yeautbkxswa/video/7573991318645378321?is_from_webapp=1&sender_device=pc', '_blank')">
                         <div class="contact-channel-icon tiktok">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
                                 <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
@@ -1168,10 +1154,10 @@
             <!-- Minimal Bottom Popup -->
             <div class="quick-popup-wrapper">
                 <div class="quick-popup">
-                    <button onclick="goStore1()" aria-label="กลับร้าน 1">
+                    <button onclick="goStore2()" aria-label="ไปหน้า 2">
                         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M19 12H5" />
-                            <path d="M12 19l-7-7 7-7" />
+                            <path d="M5 12h14" />
+                            <path d="M12 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
@@ -1191,12 +1177,12 @@
         
         const logContainer = document.getElementById('logContainer');
 
-        // Running cumulative totals (persisted) - Store 2 keys
-        let cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
-        let cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
+        // Running cumulative totals (persisted)
+        let cumulativeDeposit = Number(localStorage.getItem('cumDeposit') || 0);
+        let cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal') || 0);
 
         // Load history from localStorage
-        let history = JSON.parse(localStorage.getItem('calculatorHistory2')) || [];
+        let history = JSON.parse(localStorage.getItem('calculatorHistory')) || [];
 
         /**
          * Calculate and update display
@@ -1350,8 +1336,8 @@
             cumulativeWithdrawal += preview.deltaWithdrawal;
 
             // Persist
-            localStorage.setItem('cumDeposit2', String(cumulativeDeposit));
-            localStorage.setItem('cumWithdrawal2', String(cumulativeWithdrawal));
+            localStorage.setItem('cumDeposit', String(cumulativeDeposit));
+            localStorage.setItem('cumWithdrawal', String(cumulativeWithdrawal));
 
             // Prepare output from cumulative totals (no decimals)
             const outputText = `ยอดฝากรวม = ${Math.round(cumulativeDeposit)}\nยอดถอนรวม = ${Math.round(cumulativeWithdrawal)}\nกำไร (ฝาก-ถอน) = ${Math.round(cumulativeDeposit - cumulativeWithdrawal)}`;
@@ -1452,9 +1438,9 @@
             }, 2500);
         }
 
-        function goStore1(){
-            // Navigate back to first page
-            window.location.href = 'index.html';
+        function goStore2(){
+            // Navigate to second page (ตู้ชั้น 2)
+            window.location.href = 'ZA1.html';
         }
 
         /**
@@ -1500,7 +1486,7 @@
             }
 
             // Save to localStorage
-            localStorage.setItem('calculatorHistory2', JSON.stringify(history));
+            localStorage.setItem('calculatorHistory', JSON.stringify(history));
 
             // Update UI
             renderHistory();
@@ -1565,7 +1551,7 @@
                 'คุณต้องการลบประวัติการคำนวณทั้งหมดใช่หรือไม่?',
                 () => {
                     history = [];
-                    localStorage.removeItem('calculatorHistory2');
+                    localStorage.removeItem('calculatorHistory');
                     renderHistory();
                     showToast('ล้างประวัติสำเร็จ', 'success');
                 }
@@ -1594,12 +1580,12 @@
                 () => {
                     resetInputs();
                     history = [];
-                    localStorage.removeItem('calculatorHistory2');
+                    localStorage.removeItem('calculatorHistory');
                     // Reset cumulative totals
                     cumulativeDeposit = 0;
                     cumulativeWithdrawal = 0;
-                    localStorage.removeItem('cumDeposit2');
-                    localStorage.removeItem('cumWithdrawal2');
+                    localStorage.removeItem('cumDeposit');
+                    localStorage.removeItem('cumWithdrawal');
                     renderHistory();
                     calculate();
                     showToast('รีเซ็ตสำเร็จ', 'success');
@@ -1680,10 +1666,6 @@
             calculate();
             renderHistory();
             totalDepositInput.focus();
-            // Show notification that user is on Store 2
-            setTimeout(() => {
-                showToast('คุณอยู่ชั้น 2 (ตู้ชั้น 2)', 'info');
-            }, 500);
             document.addEventListener('keydown', function(e) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     calculateAndCopy();
@@ -1697,9 +1679,9 @@
             }, { passive: false });
         });
 
-        // DevTools & inspection deterrent (cannot fully block, just discourage)
+        // DevTools & inspection deterrent (cannot truly block, just discourage)
         (function(){
-            const threshold = 160;
+            const threshold = 160; // size difference heuristic
             let overlay = null;
             function likelyOpen(){
                 return (window.outerWidth - window.innerWidth > threshold) || (window.outerHeight - window.innerHeight > threshold);
@@ -1727,11 +1709,19 @@
                 overlay.remove();
                 overlay = null;
             }
-            setInterval(()=>{ if(likelyOpen()) showOverlay(); else hideOverlay(); },1500);
+            // Poll
+            setInterval(()=>{
+                if(likelyOpen()) showOverlay(); else hideOverlay();
+            },1500);
+            // Key & context blockers
             document.addEventListener('contextmenu', e=>{ e.preventDefault(); });
             document.addEventListener('keydown', e=>{
                 const k = e.key.toUpperCase();
-                if(k==='F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) || (e.ctrlKey && k==='U')){
+                if(
+                    k==='F12' ||
+                    (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(k)) ||
+                    (e.ctrlKey && k==='U')
+                ){
                     e.preventDefault();
                 }
             });
