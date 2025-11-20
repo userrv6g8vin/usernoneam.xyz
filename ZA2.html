@@ -1183,11 +1183,14 @@
 
         // Load history from localStorage
         let history = JSON.parse(localStorage.getItem('calculatorHistory')) || [];
+        
+        // Debounce timer for smooth input
+        let calculateTimer = null;
 
         /**
-         * Calculate and update display
+         * Calculate and update display (with debounce for typing)
          */
-        function calculate() {
+        function calculate(animate = false) {
             try {
                 const inputDeposit = parseFloat(totalDepositInput.value) || 0;
                 const inputWithdrawal = parseFloat(totalWithdrawalInput.value) || 0;
@@ -1199,10 +1202,17 @@
                 const previewWithdrawal = cumulativeWithdrawal + inputWithdrawal - minusWithdrawal;
                 const previewProfit = previewDeposit - previewWithdrawal;
 
-                // Update display with animation
-                animateNumber(displayTotalDeposit, previewDeposit);
-                animateNumber(displayTotalWithdrawal, previewWithdrawal);
-                animateNumber(displayProfit, previewProfit);
+                // Update display (animate only when explicitly requested)
+                if (animate) {
+                    animateNumber(displayTotalDeposit, previewDeposit);
+                    animateNumber(displayTotalWithdrawal, previewWithdrawal);
+                    animateNumber(displayProfit, previewProfit);
+                } else {
+                    updateDisplay(displayTotalDeposit, previewDeposit);
+                    updateDisplay(displayTotalWithdrawal, previewWithdrawal);
+                    updateDisplay(displayProfit, previewProfit);
+                    updateProfitStatus(previewProfit);
+                }
 
                 return {
                     totalDeposit: previewDeposit,
@@ -1263,18 +1273,36 @@
         }
 
         /**
-         * Animate number transition
+         * Update display without animation (smooth but instant)
+         */
+        function updateDisplay(element, targetValue) {
+            element.textContent = targetValue.toFixed(2);
+        }
+        
+        /**
+         * Animate number transition (only for final calculation)
          */
         function animateNumber(element, targetValue) {
             const currentValue = parseFloat(element.textContent) || 0;
             const difference = targetValue - currentValue;
-            const duration = 300;
+            
+            // Skip animation if difference is too small
+            if (Math.abs(difference) < 0.01) {
+                element.textContent = targetValue.toFixed(2);
+                updateProfitStatus(targetValue);
+                return;
+            }
+            
+            const duration = 400;
             const startTime = performance.now();
 
             function update(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                const easeOut = 1 - Math.pow(1 - progress, 3);
+                // Smoother easing function
+                const easeOut = progress < 0.5 
+                    ? 2 * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
                 const value = currentValue + (difference * easeOut);
                 
                 element.textContent = value.toFixed(2);
@@ -1282,7 +1310,7 @@
                 if (progress < 1) {
                     requestAnimationFrame(update);
                 } else {
-                    // Update profit status after animation
+                    element.textContent = targetValue.toFixed(2);
                     updateProfitStatus(targetValue);
                 }
             }
@@ -1447,7 +1475,7 @@
          * Calculate only (for mobile users who want to see preview before copy)
          */
         function calculateOnly() {
-            calculate();
+            calculate(true);
             showToast('คำนวณแล้ว');
         }
 
@@ -1502,7 +1530,7 @@
             }
 
             logContainer.innerHTML = history.map((entry, index) => `
-                <div class="log-item slide-in" style="animation-delay: ${index * 0.05}s">
+                <div class="log-item slide-in" style="animation-delay: ${index * 0.05}s; cursor: pointer;" onclick="revertToHistory(${index})" title="คลิกเพื่อย้อนกลับไปที่ประวัตินี้">
                     <div class="flex justify-between items-start mb-3">
                         <div class="text-xs text-gray-500">${entry.time}</div>
                         <div class="text-sm font-bold ${entry.profit >= 0 ? 'text-green-600' : 'text-red-600'}">
@@ -1538,6 +1566,47 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        /**
+         * Revert to a specific history entry
+         */
+        function revertToHistory(index) {
+            const entry = history[index];
+            if (!entry) return;
+            
+            showConfirm(
+                'ย้อนกลับประวัติ',
+                `ต้องการย้อนกลับไปที่ประวัตินี้หรือไม่?<br><small class="text-gray-500">ยอดสะสมจะกลับไปเป็น ฝาก: ${entry.prevDeposit.toFixed(2)}, ถอน: ${entry.prevWithdrawal.toFixed(2)}</small>`,
+                () => {
+                    // Revert cumulative totals to before this entry
+                    cumulativeDeposit = entry.prevDeposit;
+                    cumulativeWithdrawal = entry.prevWithdrawal;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('cumDeposit', String(cumulativeDeposit));
+                    localStorage.setItem('cumWithdrawal', String(cumulativeWithdrawal));
+                    
+                    // Put delta values back into input fields for editing
+                    totalDepositInput.value = entry.deltaDeposit > 0 ? entry.deltaDeposit : '';
+                    totalWithdrawalInput.value = entry.deltaWithdrawal > 0 ? entry.deltaWithdrawal : '';
+                    minusDepositInput.value = entry.deltaDeposit < 0 ? Math.abs(entry.deltaDeposit) : '';
+                    minusWithdrawalInput.value = entry.deltaWithdrawal < 0 ? Math.abs(entry.deltaWithdrawal) : '';
+                    
+                    // Remove this entry and all entries after it (they're now invalid)
+                    history = history.slice(index + 1);
+                    localStorage.setItem('calculatorHistory', JSON.stringify(history));
+                    
+                    // Update display
+                    calculate();
+                    renderHistory();
+                    
+                    showToast('ย้อนกลับสำเร็จ', 'success');
+                    
+                    // Focus first input
+                    totalDepositInput.focus();
+                }
+            );
         }
 
         /**
@@ -1652,11 +1721,14 @@
                     this.setSelectionRange(cursorPos - diff, cursorPos - diff);
                     
                     if (this.value < 0) this.value = 0;
-                    calculate();
+                    
+                    // Debounce: wait 150ms after user stops typing
+                    clearTimeout(calculateTimer);
+                    calculateTimer = setTimeout(() => calculate(false), 150);
                 });
 
-                // Calculate on change
-                input.addEventListener('change', calculate);
+                // Calculate on change with animation
+                input.addEventListener('change', () => calculate(true));
             });
         }
 
