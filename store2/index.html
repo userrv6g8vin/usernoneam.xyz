@@ -155,6 +155,75 @@
             transform: translateY(0);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
+        /* Clean daily summary nav button */
+        .daily-nav-btn {
+            background:#ffffff;
+            border:1px solid #e5e7eb;
+            color:#1f2937;
+            font-size:11px;
+            padding:6px 16px;
+            border-radius:10px;
+            font-weight:600;
+            letter-spacing:.2px;
+            cursor:pointer;
+            transition:background .25s ease,border-color .25s ease,color .25s ease, box-shadow .25s ease;
+        }
+        .daily-nav-btn:hover { background:#f8fafc; border-color:#cbd5e1; }
+        .daily-nav-btn:active { background:#f1f5f9; border-color:#94a3b8; }
+        /* Layout Switcher */
+        .layout-switcher {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+        .layout-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #64748b;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .25s cubic-bezier(0.4,0,0.2,1);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+        .layout-btn:hover:not(.active) {
+            background: #f8fafc;
+            color: #475569;
+        }
+        .layout-btn.active {
+            background: linear-gradient(135deg,#2563eb,#3b82f6);
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 2px 6px rgba(37,99,235,.35);
+        }
+        .layout-btn:active {
+            transform: scale(.96);
+        }
+        .vertical-item:last-of-type #verticalProfit {
+            transition: color .3s ease;
+        }
+        /* Vertical layout refined */
+        .vertical-profit-card {background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+        .vertical-profit-group {display:flex;flex-direction:column;}
+        .vp-row {display:flex;flex-direction:column;padding:10px 0;}
+        .vp-row + .vp-row {border-top:1px solid #eef2f7;}
+        .vp-label {font-size:11px;font-weight:500;letter-spacing:.2px;color:#94a3b8;text-transform:none;}
+        .vp-value {margin-top:4px;font-size:18px;font-weight:700;color:#0f172a;line-height:1;}
+        .vp-profit .vp-label {color:#94a3b8;}
+        .vp-profit .vp-value {font-size:30px;font-weight:800;letter-spacing:-.5px;}
+        .vp-icon {width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#2563eb,#3b82f6);display:flex;align-items:center;justify-content:center;margin-bottom:4px;box-shadow:0 2px 6px rgba(37,99,235,.25);transition:background .3s ease, box-shadow .3s ease;}
+        .vp-icon.negative {background:linear-gradient(135deg,#dc2626,#ef4444);box-shadow:0 2px 6px rgba(239,68,68,.35);}
+        .vp-icon svg {width:18px;height:18px;color:#ffffff;transition:transform .3s ease;}
+        @media (max-width:640px){
+            .vp-value {font-size:17px;}
+            .vp-profit .vp-value {font-size:26px;}
+        }
 
         .btn-reset {
             background: #fef2f2;
@@ -298,36 +367,39 @@
             animation: slideIn 0.3s ease-out;
         }
 
-        /* Modern confirmation modal */
+        /* Modern Clean Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             opacity: 0;
-            animation: fadeIn 0.25s ease forwards;
+            animation: fadeIn 0.35s ease forwards;
         }
         @keyframes fadeIn {
             to { opacity: 1; }
         }
         .modal-content {
             background: #ffffff;
-            border-radius: 24px;
-            padding: 32px;
-            max-width: 360px;
+            border-radius: 32px;
+            padding: 48px 40px;
+            max-width: 420px;
             width: calc(100% - 48px);
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
-            transform: scale(0.95) translateY(10px);
+            box-shadow: 0 24px 72px rgba(0, 0, 0, 0.06),
+                        0 12px 32px rgba(0, 0, 0, 0.04),
+                        0 0 0 1px rgba(0, 0, 0, 0.02);
+            transform: scale(0.9) translateY(30px);
             opacity: 0;
-            animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+            animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+            text-align: center;
         }
         @keyframes modalSlideUp {
             to {
@@ -339,70 +411,109 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-            text-align: center;
+            margin-bottom: 8px;
         }
         .modal-icon {
-            width: 56px;
-            height: 56px;
+            width: 88px;
+            height: 88px;
             border-radius: 50%;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            flex-shrink: 0;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            box-shadow: 0 12px 32px rgba(239, 68, 68, 0.08),
+                        inset 0 2px 0 rgba(255, 255, 255, 0.9);
+            margin: 0 auto 24px;
+        }
+        .modal-icon svg {
+            width: 32px;
+            height: 32px;
+            color: #ef4444;
         }
         .modal-title {
-            font-size: 19px;
+            font-size: 22px;
             font-weight: 700;
             color: #0f172a;
-            margin: 0;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.03em;
         }
         .modal-message {
             color: #64748b;
-            font-size: 14px;
-            line-height: 1.7;
-            margin-bottom: 28px;
-            text-align: center;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 36px;
+            font-weight: 400;
         }
         .modal-actions {
             display: flex;
-            gap: 12px;
+            gap: 14px;
+            justify-content: center;
         }
         .modal-btn {
             flex: 1;
-            padding: 13px 24px;
+            padding: 16px 32px;
             border: none;
-            border-radius: 14px;
+            border-radius: 18px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             font-family: 'Prompt', sans-serif;
+            letter-spacing: -0.01em;
         }
         .modal-btn-cancel {
-            background: #f1f5f9;
+            background: #ffffff;
             color: #64748b;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
         }
         .modal-btn-cancel:hover {
-            background: #e2e8f0;
+            background: #f8fafc;
             color: #475569;
-            transform: translateY(-1px);
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
         }
         .modal-btn-confirm {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background: #ef4444;
             color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+            border: 2px solid #ef4444;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.25);
         }
         .modal-btn-confirm:hover {
-            background: linear-gradient(135deg, #dc2626, #b91c1c);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+            background: linear-gradient(135deg, #ff5252 0%, #e63946 100%);
+            box-shadow: 0 6px 24px rgba(239, 68, 68, 0.35),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px) scale(1.02);
         }
         .modal-btn-confirm:active,
         .modal-btn-cancel:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
+        }
+        
+        /* Clean Clear Button */
+        .clear-btn {
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #ffffff;
+            color: #ef4444;
+            border: 2px solid #fee2e2;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.04);
+            letter-spacing: -0.01em;
+        }
+        .clear-btn:hover {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.1);
+        }
+        .clear-btn:active {
+            transform: translateY(0) scale(0.97);
         }
 
         @media (max-width: 640px) {
@@ -892,8 +1003,20 @@
                     </div>
                 </div>
 
-                <!-- Result Card -->
-                <div class="result-card">
+                <!-- Layout Switcher -->
+                <div class="layout-switcher">
+                    <button type="button" id="btnLayoutStandard" class="layout-btn active" onclick="toggleLayout('standard')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        แนวนอน
+                    </button>
+                    <button type="button" id="btnLayoutVertical" class="layout-btn" onclick="toggleLayout('vertical')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v18M12 3v18M18 3v18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        แนวตั้ง
+                    </button>
+                </div>
+
+                <!-- Result Card (Standard Layout) -->
+                <div id="standardProfitLayout" class="result-card">
                     <!-- Large Profit Display -->
                     <div class="result-profit-main">
                         <div id="displayProfitIcon" class="result-profit-icon">฿</div>
@@ -910,6 +1033,31 @@
                         <div class="result-detail-item">
                             <div class="result-detail-label">ยอดถอนรวม:</div>
                             <div id="displayTotalWithdrawal" class="result-detail-value">฿0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vertical Profit Layout (Hidden by default) -->
+                <div id="verticalProfitLayout" style="display:none" class="vertical-profit-card">
+                    <div class="vertical-profit-group">
+                        <div class="vp-row">
+                            <span class="vp-label">ยอดฝากรวม</span>
+                            <span id="verticalTotalDeposit" class="vp-value">0.00</span>
+                        </div>
+                        <div class="vp-row">
+                            <span class="vp-label">ยอดถอนรวม</span>
+                            <span id="verticalTotalWithdrawal" class="vp-value">0.00</span>
+                        </div>
+                        <div class="vp-row vp-profit">
+                            <div class="flex items-center gap-3">
+                                <div id="verticalProfitIcon" class="vp-icon" aria-hidden="true">
+                                    <svg id="verticalProfitArrow" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path id="verticalArrowPath" d="M12 3v18M7 8l5-5 5 5"/></svg>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span id="verticalProfitLabel" class="vp-label">ได้กำไร</span>
+                                    <span id="verticalProfit" class="vp-value text-green-600">0.00</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -945,7 +1093,7 @@
                             </svg>
                             ประวัติการคำนวณ
                         </h2>
-                        <button onclick="clearHistory()" class="text-xs text-red-500 hover:text-red-600">ล้างทั้งหมด</button>
+                         <button onclick="clearHistory()" class="text-xs text-red-500 hover:text-red-600">ล้างทั้งหมด</button>
                     </div>
                     
                     <div id="logContainer" class="max-h-80 overflow-y-auto space-y-2">
@@ -1085,7 +1233,13 @@
 
     </div>
 
-            <!-- Navigation Button -->
+            <!-- Sub Navigation (Store2) -->
+            <div id="subNav2" class="bg-white border-b border-gray-100 px-5 py-2 flex gap-4 items-center">
+                <button type="button" onclick="window.location.href='/'" class="daily-nav-btn" id="backToMainBtn">กลับหน้าหลัก</button>
+                <button type="button" onclick="window.location.href='/daily/'" class="daily-nav-btn" id="dailySummaryBtnStore2">สรุปรายวัน</button>
+            </div>
+
+            <!-- Navigation Floating Button -->
             <div class="quick-popup-wrapper">
                 <button onclick="goStore1()" aria-label="กลับร้าน 1">
                     <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -1109,17 +1263,26 @@
         
         const logContainer = document.getElementById('logContainer');
 
+        // Ensure daily summary button present (self-heal like main index)
+        document.addEventListener('DOMContentLoaded', ()=>{
+            const subNav2 = document.getElementById('subNav2');
+            const createDailyBtn = () => {
+                const b=document.createElement('button');
+                b.type='button'; b.id='dailySummaryBtnStore2'; b.className='daily-nav-btn'; b.textContent='สรุปรายวัน';
+                b.addEventListener('click',()=> window.location.href='/daily/');
+                subNav2.appendChild(b);
+            };
+            if(subNav2 && !document.getElementById('dailySummaryBtnStore2')) createDailyBtn();
+            if(subNav2){
+                const ensure=()=>{ if(!document.getElementById('dailySummaryBtnStore2')) createDailyBtn(); };
+                let c=0; const interval=setInterval(()=>{ ensure(); if(++c>20) clearInterval(interval); },500);
+                new MutationObserver(()=> ensure()).observe(subNav2,{childList:true});
+            }
+        });
+
         // Running cumulative totals (persisted) - Store 2 keys
-        let cumulativeDeposit = 0;
-        let cumulativeWithdrawal = 0;
-
-        function reloadCumulative() {
-            cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
-            cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
-        }
-
-        // โหลดค่าทุกครั้งที่เปิดหน้า
-        reloadCumulative();
+        let cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
+        let cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
 
         // Load history from localStorage
         let history = JSON.parse(localStorage.getItem('calculatorHistory2')) || [];
@@ -1132,7 +1295,6 @@
          */
         function calculate(animate = false) {
             try {
-                reloadCumulative();
                 const inputDeposit = parseFloat(totalDepositInput.value) || 0;
                 const inputWithdrawal = parseFloat(totalWithdrawalInput.value) || 0;
                 const minusDeposit = parseFloat(minusDepositInput.value) || 0;
@@ -1153,6 +1315,19 @@
                     updateDisplay(displayTotalWithdrawal, previewWithdrawal);
                     updateDisplay(displayProfit, previewProfit);
                     updateProfitStatus(previewProfit);
+                }
+
+                // Sync vertical layout values
+                const verticalDepositEl = document.getElementById('verticalTotalDeposit');
+                const verticalWithdrawalEl = document.getElementById('verticalTotalWithdrawal');
+                const verticalProfitEl = document.getElementById('verticalProfit');
+                if (verticalDepositEl && verticalWithdrawalEl && verticalProfitEl) {
+                    verticalDepositEl.textContent = previewDeposit.toFixed(2);
+                    verticalWithdrawalEl.textContent = previewWithdrawal.toFixed(2);
+                    verticalProfitEl.textContent = previewProfit.toFixed(2);
+                    // Color state
+                    verticalProfitEl.classList.remove('text-green-600','text-red-600');
+                    verticalProfitEl.classList.add(previewProfit < 0 ? 'text-red-600' : 'text-green-600');
                 }
 
                 return {
@@ -1266,20 +1441,75 @@
             const profitIcon = document.getElementById('displayProfitIcon');
             const profitAmount = document.getElementById('displayProfit');
             const profitLabel = document.getElementById('displayProfitLabel');
+            const verticalProfitEl = document.getElementById('verticalProfit');
+            const verticalIcon = document.getElementById('verticalProfitIcon');
+            const verticalArrowPath = document.getElementById('verticalArrowPath');
+            const verticalProfitLabel = document.getElementById('verticalProfitLabel');
 
             if (profitValue < 0) {
                 // ยอดติดลบ - เป็นสีแดง
                 profitIcon.classList.add('negative');
                 profitAmount.classList.add('negative');
                 profitLabel.classList.add('negative');
-                profitLabel.textContent = 'ปัจจุบันยอดติดลบ';
+                profitLabel.textContent = 'ขาดทุน';
+                if (verticalProfitEl) {
+                    verticalProfitEl.classList.remove('text-green-600');
+                    verticalProfitEl.classList.add('text-red-600');
+                }
+                if (verticalIcon && verticalArrowPath) {
+                    verticalIcon.classList.add('negative');
+                    // Arrow down: keep vertical line then arrow at bottom
+                    verticalArrowPath.setAttribute('d','M12 3v18M7 16l5 5 5-5');
+                }
+                if (verticalProfitLabel) {
+                    verticalProfitLabel.textContent = 'ขาดทุน';
+                }
             } else {
                 // ได้กำไร - เป็นสีเขียว
                 profitIcon.classList.remove('negative');
                 profitAmount.classList.remove('negative');
                 profitLabel.classList.remove('negative');
                 profitLabel.textContent = 'ได้กำไร';
+                if (verticalProfitEl) {
+                    verticalProfitEl.classList.remove('text-red-600');
+                    verticalProfitEl.classList.add('text-green-600');
+                }
+                if (verticalIcon && verticalArrowPath) {
+                    verticalIcon.classList.remove('negative');
+                    // Arrow up
+                    verticalArrowPath.setAttribute('d','M12 3v18M7 8l5-5 5 5');
+                }
+                if (verticalProfitLabel) {
+                    verticalProfitLabel.textContent = 'ได้กำไร';
+                }
             }
+        }
+
+        /**
+         * Save daily data for analytics
+         */
+        function saveDailyData(deltaDeposit, deltaWithdrawal) {
+            const now = new Date();
+            const dateKey = now.toLocaleDateString('sv-SE'); // YYYY-MM-DD format
+            
+            // Load existing data
+            const dailyDataRaw = localStorage.getItem('dailyData');
+            const dailyData = dailyDataRaw ? JSON.parse(dailyDataRaw) : {};
+            
+            // Initialize array for this date if needed
+            if (!dailyData[dateKey]) {
+                dailyData[dateKey] = [];
+            }
+            
+            // Add entry
+            dailyData[dateKey].push({
+                ts: now.toISOString(),
+                deltaDeposit: deltaDeposit,
+                deltaWithdrawal: deltaWithdrawal
+            });
+            
+            // Save back
+            localStorage.setItem('dailyData2', JSON.stringify(dailyData));
         }
 
         /**
@@ -1339,6 +1569,9 @@
                     totalWithdrawal: cumulativeWithdrawal,
                     profit: cumulativeDeposit - cumulativeWithdrawal
                 });
+
+                // Save to daily analytics
+                saveDailyData(deltaDeposit, deltaWithdrawal);
 
                 // Clear inputs for next entry and reset displayed results
                 totalDepositInput.value = '';
@@ -1418,6 +1651,32 @@
         function calculateOnly() {
             calculate(true);
             showToast('คำนวณแล้ว');
+        }
+
+        /**
+         * Toggle between standard and vertical layouts
+         */
+        function toggleLayout(mode) {
+            const standardLayout = document.getElementById('standardProfitLayout');
+            const verticalLayout = document.getElementById('verticalProfitLayout');
+            const btnStandard = document.getElementById('btnLayoutStandard');
+            const btnVertical = document.getElementById('btnLayoutVertical');
+            if (!standardLayout || !verticalLayout) return;
+
+            if (mode === 'vertical') {
+                standardLayout.style.display = 'none';
+                verticalLayout.style.display = 'block';
+                btnVertical.classList.add('active');
+                btnStandard.classList.remove('active');
+                localStorage.setItem('layoutMode2','vertical');
+            } else {
+                standardLayout.style.display = 'block';
+                verticalLayout.style.display = 'none';
+                btnStandard.classList.add('active');
+                btnVertical.classList.remove('active');
+                localStorage.setItem('layoutMode2','standard');
+            }
+            calculate(false);
         }
 
         /**
@@ -1609,7 +1868,7 @@
         function handleEnter(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                calculateOnly();
+                calculateAndCopy();
             }
         }
 
@@ -1756,4 +2015,24 @@
     </script>
 
 </body>
+        <div class="quick-popup-wrapper">
+                <button onclick="window.location.href='/store1/'" aria-label="กลับหน้าหลัก">
+                        <svg fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                </button>
+        </div>
+        <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+                alert('ขออภัย ไม่อนุญาตให้เปิด DevTools');
+            }
+        });
+        </script>
+<script>
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        e.preventDefault();
+    }
+});
+</script>
 </html>
