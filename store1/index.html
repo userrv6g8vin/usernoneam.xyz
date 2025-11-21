@@ -1450,25 +1450,21 @@
         function saveDailyData(deltaDeposit, deltaWithdrawal) {
             const now = new Date();
             const dateKey = now.toLocaleDateString('sv-SE'); // YYYY-MM-DD format
-            
             // Load existing data
-            const dailyDataRaw = localStorage.getItem('dailyData');
-            const dailyData = dailyDataRaw ? JSON.parse(dailyDataRaw) : {};
-            
+            const dailyData1Raw = localStorage.getItem('dailyData1');
+            const dailyData1 = dailyData1Raw ? JSON.parse(dailyData1Raw) : {};
             // Initialize array for this date if needed
-            if (!dailyData[dateKey]) {
-                dailyData[dateKey] = [];
+            if (!dailyData1[dateKey]) {
+                dailyData1[dateKey] = [];
             }
-            
             // Add entry
-            dailyData[dateKey].push({
+            dailyData1[dateKey].push({
                 ts: now.toISOString(),
                 deltaDeposit: deltaDeposit,
                 deltaWithdrawal: deltaWithdrawal
             });
-            
             // Save back
-            localStorage.setItem('dailyData1', JSON.stringify(dailyData));
+            localStorage.setItem('dailyData1', JSON.stringify(dailyData1));
         }
 
         /**
