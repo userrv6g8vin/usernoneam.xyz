@@ -1486,23 +1486,23 @@
             const dateKey = now.toLocaleDateString('sv-SE'); // YYYY-MM-DD format
             
             // Load existing data
-            const dailyDataRaw = localStorage.getItem('dailyData');
-            const dailyData = dailyDataRaw ? JSON.parse(dailyDataRaw) : {};
+            const dailyData2Raw = localStorage.getItem('dailyData2');
+            const dailyData2 = dailyData2Raw ? JSON.parse(dailyData2Raw) : {};
             
             // Initialize array for this date if needed
-            if (!dailyData[dateKey]) {
-                dailyData[dateKey] = [];
+            if (!dailyData2[dateKey]) {
+                dailyData2[dateKey] = [];
             }
             
             // Add entry
-            dailyData[dateKey].push({
+            dailyData2[dateKey].push({
                 ts: now.toISOString(),
                 deltaDeposit: deltaDeposit,
                 deltaWithdrawal: deltaWithdrawal
             });
             
             // Save back
-            localStorage.setItem('dailyData2', JSON.stringify(dailyData));
+            localStorage.setItem('dailyData2', JSON.stringify(dailyData2));
         }
 
         /**
