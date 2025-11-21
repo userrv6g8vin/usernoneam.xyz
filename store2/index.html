@@ -1005,14 +1005,7 @@
 
                 <!-- Layout Switcher -->
                 <div class="layout-switcher">
-                    <button type="button" id="btnLayoutStandard" class="layout-btn active" onclick="toggleLayout('standard')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        แนวนอน
-                    </button>
-                    <button type="button" id="btnLayoutVertical" class="layout-btn" onclick="toggleLayout('vertical')">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v18M12 3v18M18 3v18" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        แนวตั้ง
-                    </button>
+                    <!-- Layout switcher buttons removed: site is locked to vertical layout -->
                 </div>
 
                 <!-- Result Card (Standard Layout) -->
@@ -1938,6 +1931,9 @@
             calculate();
             renderHistory();
             totalDepositInput.focus();
+            // Force vertical layout on page load
+            localStorage.setItem('layoutMode2', 'vertical');
+            toggleLayout('vertical');
             // Show notification that user is on Store 2
             setTimeout(() => {
                 showToast('คุณอยู่ชั้น 2 (ตู้ชั้น 2)', 'info');
@@ -1953,6 +1949,9 @@
                     e.preventDefault();
                 }
             }, { passive: false });
+            // Hide horizontal layout button
+            const btnStandard = document.getElementById('btnLayoutStandard');
+            if (btnStandard) btnStandard.style.display = 'none';
         });
 
         // DevTools protection (desktop only)
