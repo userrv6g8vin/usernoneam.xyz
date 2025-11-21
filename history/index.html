@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ประวัติการทำรายการทั้งหมด | usernoneam.xyz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Prompt',sans-serif;background:#f8fafc;}
+    .card{background:#ffffff;border:1px solid #e5e7eb;border-radius:20px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}    
+    .metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px;}
+    .metric{display:flex;flex-direction:column;gap:4px;padding:12px 14px;border:1px solid #f1f5f9;border-radius:14px;background:#f9fafb;}
+    .metric-label{font-size:10px;font-weight:600;letter-spacing:.5px;color:#64748b;text-transform:uppercase;}
+    .metric-value{font-size:16px;font-weight:700;color:#0f172a;}
+    .section-title{font-size:12px;font-weight:700;color:#1f2937;display:flex;align-items:center;gap:6px;margin-top:24px;margin-bottom:8px;}
+    .list-table{width:100%;border-collapse:collapse;font-size:11px;}
+    .list-table th{background:#f1f5f9;font-weight:600;text-align:left;padding:6px 8px;font-size:11px;color:#475569;border-bottom:1px solid #e2e8f0;}
+    .list-table td{padding:6px 8px;border-bottom:1px solid #f1f5f9;}
+    .badge{display:inline-block;background:#eef2ff;color:#1e40af;font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;}
+    .hour-bar{height:6px;border-radius:4px;background:linear-gradient(90deg,#2563eb,#3b82f6);}
+    .empty{color:#94a3b8;font-size:12px;text-align:center;padding:28px 0;}
+    @media (max-width:640px){.metric-value{font-size:15px}}
+  </style>
+</head>
+<body class="min-h-screen text-gray-800">
+  <div class="max-w-xl mx-auto px-5 py-6">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span class="text-base font-bold text-gray-900">ประวัติการคำนวณ</span>
+      </div>
+      <a id="btnClearAllHistory" href="#" style="color:#ff3b3b;font-size:15px;font-weight:normal;text-decoration:none;margin-left:auto;">ล้างทั้งหมด</a>
+    </div>
+    <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        e.preventDefault();
+        alert('ขออภัย ไม่อนุญาตให้เปิด DevTools');
+      }
+    });
+    </script>
+    <div class="card" id="analyticsCard">
+      <div id="analyticsContent"></div>
+    </div>
+  </div>
+  <script>
+    function formatNumber(n){return n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+    function loadHistory(){
+      let historyRaw = localStorage.getItem('calculatorHistory');
+      let history = [];
+      try{history = JSON.parse(historyRaw)||[]}catch(e){history=[];}
+      return history;
+    }
+    function computeAnalytics(){
+      const data = loadHistory();
+      const container = document.getElementById('analyticsContent');
+      if(!data.length){container.innerHTML = '<div class="empty">ยังไม่มีข้อมูลประวัติจากหน้าหลัก</div>';return;}
+      // Extract metrics
+      const totalOps = data.length;
+      const firstTs = data[data.length-1].ts || null;
+      const lastTs = data[0].ts || null;
+      // Hour distribution
+      const hourCounts = {};
+      // Amount frequencies (deposit & withdrawal)
+      const depositFreq = {};
+      const withdrawFreq = {};
+      let posProfit=0, negProfit=0, totalProfitChange=0;
+      data.forEach(entry=>{
+        const deltaD = Number(entry.deltaDeposit||0);
+        const deltaW = Number(entry.deltaWithdrawal||0);
+        const profit = Number(entry.profit||0);
+        // Hours
+        let hour=null;
+        if(entry.ts){hour = new Date(entry.ts).getHours();}
+        else if(entry.time){const m=entry.time.match(/(\d{1,2}):(\d{2}):(\d{2})/);if(m){hour=Number(m[1]);}}
+        if(hour!==null){hourCounts[hour]=(hourCounts[hour]||0)+1;}
+        if(deltaD!==0){depositFreq[deltaD]=(depositFreq[deltaD]||0)+1;}
+        if(deltaW!==0){withdrawFreq[deltaW]=(withdrawFreq[deltaW]||0)+1;}
+        if(profit>=0) posProfit++; else negProfit++;
+        totalProfitChange = profit; // profit already cumulative at that moment; keep last cumulative
+      });
+      const hoursSorted = Object.keys(hourCounts).map(h=>Number(h)).sort((a,b)=>a-b);
+      const topDeposit = Object.entries(depositFreq).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      const topWithdraw = Object.entries(withdrawFreq).sort((a,b)=>b[1]-a[1]).slice(0,8);
+      // Build metric header
+      let html = '';
+      html += '<div class="metric-grid">'+
+        '<div class="metric"><div class="metric-label">จำนวนครั้งทั้งหมด</div><div class="metric-value">'+totalOps+'</div></div>'+\
+        '<div class="metric"><div class="metric-label">กำไรสุดท้าย</div><div class="metric-value '+(totalProfitChange<0?'text-red-600':'text-green-600')+'">'+formatNumber(totalProfitChange)+'</div></div>'+\
+        '<div class="metric"><div class="metric-label">ครั้งกำไร</div><div class="metric-value">'+posProfit+'</div></div>'+\
+        '<div class="metric"><div class="metric-label">ครั้งขาดทุน</div><div class="metric-value">'+negProfit+'</div></div>'+\
+        '<div class="metric"><div class="metric-label">ชั่วโมงที่บันทึก</div><div class="metric-value">'+hoursSorted.length+'</div></div>'+\
+        '<div class="metric"><div class="metric-label">ช่วงเวลา</div><div class="metric-value">'+(hoursSorted.length?hoursSorted[0]+':00 - '+hoursSorted[hoursSorted.length-1]+':59':'-')+'</div></div>'+\
+        '</div>';
+      // Hour distribution section
+      html += '<div class="section-title">การกระจายตามชั่วโมง</div>';
+      html += '<table class="list-table mb-4"><thead><tr><th>ชั่วโมง</th><th>จำนวนครั้ง</th><th>สัดส่วน</th></tr></thead><tbody>';
+      const maxHourCount = Math.max(...Object.values(hourCounts));
+      hoursSorted.forEach(h=>{
+        const c = hourCounts[h];
+        const pct = (c/totalOps*100).toFixed(1)+'%';
+        const barW = (c/maxHourCount*100).toFixed(0)+'%';
+        html += '<tr><td>'+h+':00</td><td>'+c+'</td><td><div class="w-full bg-gray-100 rounded h-2 overflow-hidden"><div class="hour-bar" style="width:'+barW+'"></div></div><div class="mt-1 text-[10px] text-gray-500">'+pct+'</div></td></tr>';
+      });
+      html += '</tbody></table>';
+      // Top deposit adjustments
+      html += '<div class="section-title">จำนวนครั้งที่ปรับ (ฝาก)</div>';
+      if(topDeposit.length){
+        html += '<table class="list-table mb-4"><thead><tr><th>จำนวน (บาท)</th><th>ครั้ง</th></tr></thead><tbody>';
+        topDeposit.forEach(([amt,count])=>{html+='<tr><td>'+amt+'</td><td>'+count+'</td></tr>';});
+        html+='</tbody></table>';
+      } else html+='<div class="empty">ไม่มีการปรับยอดฝาก</div>';
+      // Top withdraw adjustments
+      html += '<div class="section-title">จำนวนครั้งที่ปรับ (ถอน)</div>';
+      if(topWithdraw.length){
+        html += '<table class="list-table mb-4"><thead><tr><th>จำนวน (บาท)</th><th>ครั้ง</th></tr></thead><tbody>';
+        topWithdraw.forEach(([amt,count])=>{html+='<tr><td>'+amt+'</td><td>'+count+'</td></tr>';});
+        html+='</tbody></table>';
+      } else html+='<div class="empty">ไม่มีการปรับยอดถอน</div>';
+      // Raw list link suggestion
+      html += '<div class="section-title">หมายเหตุ</div>';
+      html += '<p class="text-[11px] text-gray-500 leading-relaxed">ข้อมูลคำนวณจาก localStorage ของเบราว์เซอร์เครื่องนี้เท่านั้น หากล้างประวัติหรือเปลี่ยนเครื่องจะไม่เห็นข้อมูลเก่า การบันทึกแต่ละครั้งคือการกดปุ่ม "คัดลอก" จากหน้าหลัก.</p>';
+      container.innerHTML = html;
+    }
+    window.addEventListener('load', computeAnalytics);
+  </script>
+<script>
+document.getElementById('btnClearAllHistory').addEventListener('click', function() {
+  localStorage.removeItem('calculatorHistory');
+  location.reload();
+});
+</script>
+</body>
+</html>
