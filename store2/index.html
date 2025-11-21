@@ -1110,8 +1110,16 @@
         const logContainer = document.getElementById('logContainer');
 
         // Running cumulative totals (persisted) - Store 2 keys
-        let cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
-        let cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
+        let cumulativeDeposit = 0;
+        let cumulativeWithdrawal = 0;
+
+        function reloadCumulative() {
+            cumulativeDeposit = Number(localStorage.getItem('cumDeposit2') || 0);
+            cumulativeWithdrawal = Number(localStorage.getItem('cumWithdrawal2') || 0);
+        }
+
+        // โหลดค่าทุกครั้งที่เปิดหน้า
+        reloadCumulative();
 
         // Load history from localStorage
         let history = JSON.parse(localStorage.getItem('calculatorHistory2')) || [];
@@ -1124,6 +1132,7 @@
          */
         function calculate(animate = false) {
             try {
+                reloadCumulative();
                 const inputDeposit = parseFloat(totalDepositInput.value) || 0;
                 const inputWithdrawal = parseFloat(totalWithdrawalInput.value) || 0;
                 const minusDeposit = parseFloat(minusDepositInput.value) || 0;
